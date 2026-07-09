@@ -1,0 +1,28 @@
+{
+  "name": "cloudoptima",
+  "version": "1.0.0",
+  "description": "Autonomous FinOps Agent Engine for Cloud Infrastructure & LLM Cost Routing",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "npx http-server -p 8000",
+    "dev": "npx http-server -p 8000"
+  },
+  "keywords": [
+    "finops",
+    "autonomous-agent",
+    "cloud-optimization",
+    "llm-routing",
+    "terraform"
+  ],
+  "author": "SARIKONDA MANOHAR RAJU",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manoharrajusarikonda331-mani/cloudoptima.git"
+  },
+  "bugs": {
+    "url": "https://github.com/manoharrajusarikonda331-mani/cloudoptima/issues"
+  },
+  "homepage": "https://manoharrajusarikonda331-mani.github.io/cloudoptima/"
+}
