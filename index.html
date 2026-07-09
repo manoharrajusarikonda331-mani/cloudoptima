@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudOptima | Agentic FinOps Engine</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark-theme">
+    
+    <!-- Notification Overlay (Simulates SMS/Email OTP Receipts) -->
+    <div id="notification-hub" class="notification-hub"></div>
+
+    <!-- 1. LOADING SCREEN -->
+    <div id="loading-screen" class="view-screen active">
+        <div class="glass-container loading-card">
+            <div class="logo-animation-container">
+                <div class="logo-glow"></div>
+                <div class="logo-mesh">
+                    <svg viewBox="0 0 100 100" class="main-logo-svg">
+                        <path d="M50 15 C32 15 20 27 20 45 C20 50 22 55 25 59 C18 64 15 71 15 78 C15 88 23 95 35 95 L65 95 C77 95 85 88 85 78 C85 71 82 64 75 59 C78 55 80 50 80 45 C80 27 68 15 50 15 Z" fill="none" stroke="url(#logo-grad)" stroke-width="4" stroke-linejoin="round" />
+                        <path d="M50 35 L40 55 L55 55 L45 75" fill="none" stroke="url(#bolt-grad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#10b981" />
+                                <stop offset="50%" stop-color="#6366f1" />
+                                <stop offset="100%" stop-color="#ef4444" />
+                            </linearGradient>
+                            <linearGradient id="bolt-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#fbbf24" />
+                                <stop offset="100%" stop-color="#f59e0b" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+            </div>
+            
+            <h1 class="brand-title font-space">CLOUDO<span class="text-gradient">PTIMA</span></h1>
+            <p class="brand-subtitle">Agentic FinOps Engine</p>
+            
+            <div class="loading-bar-wrapper">
+                <div class="loading-bar-fill" id="loading-bar"></div>
+            </div>
+            <div class="loading-status-text font-mono" id="loading-status">Initializing core processes...</div>
+            <div class="loading-percentage font-space" id="loading-percent">0%</div>
+        </div>
+    </div>
+
+    <!-- 2. AUTH SCREEN (LOGIN & SIGNUP) -->
+    <div id="auth-screen" class="view-screen hidden">
+        <div class="glass-container auth-card">
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active font-space" data-tab="login">SIGN IN</button>
+                <button class="auth-tab-btn font-space" data-tab="signup">CREATE ACCOUNT</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+                <div class="form-header">
+                    <h2 class="font-space">Welcome Back</h2>
+                    <p>Enter your credentials to access the engine</p>
+                </div>
+                <div class="form-group">
+                    <label for="login-email">Corporate Email</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" id="login-email" required placeholder="name@company.com">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <input type="password" id="login-password" required placeholder="••••••••">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary font-space">Initialize Session</button>
+                <button type="button" class="btn btn-secondary bypass-btn font-space">Connect to Sandbox Environment</button>
+            </form>
+            
+            <!-- Signup Form -->
+            <form id="signup-form" class="auth-form">
+                <div class="form-header">
+                    <h2 class="font-space">Register FinOps ID</h2>
+                    <p>Create a secure profile within your cloud tenant</p>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="signup-name">Full Name</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            <input type="text" id="signup-name" required placeholder="Manohar Raju">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-role">Organizational Role</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            <select id="signup-role" required>
+                                <option value="FinOps Architect">FinOps Architect</option>
+                                <option value="CFO / Finance Director">CFO / Finance Director</option>
+                                <option value="DevOps / Cloud Engineer">DevOps / Cloud Engineer</option>
+                                <option value="Solutions Architect">Solutions Architect</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Corporate Email</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" id="signup-email" required placeholder="name@company.com">
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="signup-phone">Mobile Number (for SMS 2FA)</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            <input type="tel" id="signup-phone" required placeholder="+1234567890">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input type="password" id="signup-password" required placeholder="••••••••">
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary font-space">Create Credentials</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. TWO-FACTOR AUTHENTICATION (2FA) SCREEN -->
+    <div id="two-factor-screen" class="view-screen hidden">
+        <div class="glass-container tfa-card">
+            <div class="form-header text-center">
+                <div class="shield-icon-container">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="shield-icon">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    </svg>
+                </div>
+                <h2 class="font-space">Two-Factor Authentication</h2>
+                <p>Select your verification method to retrieve your OTP</p>
+            </div>
+            
+            <!-- 2FA Selector -->
+            <div id="tfa-selector" class="tfa-selector-methods">
+                <button class="tfa-method-card active" id="tfa-method-email-btn" data-method="email">
+                    <div class="method-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <div class="method-text">
+                        <span class="method-title font-space">Secure Email OTP</span>
+                        <span class="method-detail font-mono" id="tfa-mask-email">u***@company.com</span>
+                    </div>
+                </button>
+                <button class="tfa-method-card" id="tfa-method-sms-btn" data-method="sms">
+                    <div class="method-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div class="method-text">
+                        <span class="method-title font-space">SMS Push Code</span>
+                        <span class="method-detail font-mono" id="tfa-mask-phone">+91 *******234</span>
+                    </div>
+                </button>
+                <button id="send-otp-btn" class="btn btn-primary font-space">Dispatch Code</button>
+            </div>
+
+            <!-- OTP Input Form -->
+            <div id="otp-input-area" class="otp-input-area hidden">
+                <p class="verification-helper-text text-center">
+                    Enter the 6-digit verification code sent to your <span id="selected-method-label">email</span>:
+                </p>
+                
+                <div class="otp-digits-container">
+                    <input type="text" maxlength="1" class="otp-digit" data-index="0">
+                    <input type="text" maxlength="1" class="otp-digit" data-index="1">
+                    <input type="text" maxlength="1" class="otp-digit" data-index="2">
+                    <input type="text" maxlength="1" class="otp-digit" data-index="3">
+                    <input type="text" maxlength="1" class="otp-digit" data-index="4">
+                    <input type="text" maxlength="1" class="otp-digit" data-index="5">
+                </div>
+
+                <div class="timer-section text-center font-mono">
+                    Verification expires in: <span id="tfa-timer">02:00</span>
+                </div>
+                
+                <button id="verify-otp-btn" class="btn btn-primary font-space">Verify & Unlock</button>
+                
+                <div class="resend-container text-center font-space">
+                    Didn't receive code? <button id="resend-otp-link" class="btn-link" disabled>Resend Code</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. COMPANY LINK PAGE -->
+    <div id="link-screen" class="view-screen hidden">
+        <div class="glass-container link-card">
+            <div class="form-header text-center">
+                <h2 class="font-space">Cloud Integration Wizard</h2>
+                <p>Link your organization's infrastructure with the CloudOptima Engine</p>
+            </div>
+            
+            <form id="company-link-form">
+                <div class="form-group">
+                    <label for="company-name">Organization Name</label>
+                    <div class="input-wrapper">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0v-1m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m0 0v1a3 3 0 0 0 6 0v-1M9 21h6M9 12h6"/></svg>
+                        <input type="text" id="company-name" required placeholder="CloudOptima Corp">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Cloud Provider Target</label>
+                    <div class="provider-radio-group">
+                        <label class="provider-card">
+                            <input type="radio" name="cloud-provider" value="AWS" checked>
+                            <span class="provider-box">
+                                <svg class="provider-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                                Amazon Web Services
+                            </span>
+                        </label>
+                        <label class="provider-card">
+                            <input type="radio" name="cloud-provider" value="GCP">
+                            <span class="provider-box">
+                                <svg class="provider-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10H12v4h4.58c-.44 1.21-1.42 2.08-2.58 2.08-1.66 0-3-1.34-3-3s1.34-3 3-3c.77 0 1.47.29 2 .77l2.84-2.84C15.29 8.04 13.73 7 12 7c-3.31 0-6 2.69-6 6s2.69 6 6 6c3.31 0 6-2.69 6-6V2H12z"/></svg>
+                                Google Cloud Platform
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="cloud-account-id">Account / Tenant ID</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                            <input type="text" id="cloud-account-id" required placeholder="AWS Account ID (12 digits)">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cloud-role-arn">Role ARN / Read Access Token</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input type="text" id="cloud-role-arn" required placeholder="arn:aws:iam::123456789012:role/FinOps">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="security-info-alert">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="alert-icon"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <span><strong>Security Note:</strong> CloudOptima requests read-only metrics access to Billing, CloudWatch, and cost-allocation tags. We will never modify server configurations without direct user approval of Terraform scripts.</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary font-space">Establish Connective Link</button>
+            </form>
+            
+            <!-- Connection loading indicator -->
+            <div id="connector-loading" class="connector-loading hidden">
+                <div class="loading-ring-wrap">
+                    <div class="loading-ring"></div>
+                </div>
+                <h3 class="font-space">Accessing Cloud API...</h3>
+                <div class="connector-console font-mono" id="connector-console-logs"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. MAIN DASHBOARD SCREEN -->
+    <div id="dashboard-screen" class="view-screen hidden">
+        
+        <!-- Header -->
+        <header class="main-header glass-container">
+            <div class="header-left">
+                <div class="header-logo">
+                    <svg viewBox="0 0 100 100" class="mini-logo-svg">
+                        <path d="M50 15 C32 15 20 27 20 45 C20 50 22 55 25 59 C18 64 15 71 15 78 C15 88 23 95 35 95 L65 95 C77 95 85 88 85 78 C85 71 82 64 75 59 C78 55 80 50 80 45 C80 27 68 15 50 15 Z" fill="none" stroke="url(#mini-grad)" stroke-width="6" />
+                        <path d="M50 35 L40 55 L55 55 L45 75" fill="none" stroke="#fbbf24" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+                        <defs>
+                            <linearGradient id="mini-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#10b981" />
+                                <stop offset="50%" stop-color="#6366f1" />
+                                <stop offset="100%" stop-color="#ef4444" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span class="logo-text font-space">CLOUDO<span class="text-gradient">PTIMA</span></span>
+                </div>
+                <div class="header-divider"></div>
+                <div class="company-badge-container">
+                    <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v1a3 3 0 0 0 6 0v-1m0 0V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2m0 0v1a3 3 0 0 0 6 0v-1M9 21h6M9 12h6"/></svg>
+                    <span id="header-company-name" class="font-space">CloudOptima Corp</span>
+                    <span class="region-badge font-mono" id="header-region">us-east-1</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="agent-badge">
+                    <span class="status-dot orange-pulse" id="agent-status-dot"></span>
+                    <span class="status-text font-mono" id="agent-status-text">AGENT: IDLE</span>
+                </div>
+                <div class="user-profile-badge">
+                    <div class="user-avatar" id="header-user-avatar">A</div>
+                    <div class="user-info">
+                        <span class="user-name" id="header-user-name">Manohar Raju</span>
+                        <span class="user-role" id="header-user-role">FinOps Lead</span>
+                    </div>
+                </div>
+                <button class="icon-btn" id="open-options-btn" aria-label="Open settings and info">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="gear-icon"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body -->
+        <main class="dashboard-body">
+            
+            <!-- Top Hero Stats Row -->
+            <section class="metrics-row">
+                <!-- Stat Card: Live Waste -->
+                <div class="metric-card glass-container waste-alert" id="waste-card">
+                    <div class="card-bg-glow"></div>
+                    <div class="metric-header">
+                        <span class="metric-label font-space">Wasted Cloud Dollars (Detected)</span>
+                        <div class="metric-icon-wrap bg-crimson">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                    </div>
+                    <div class="metric-value font-space animate-pulse" id="metric-waste">$14,245.80</div>
+                    <div class="metric-trend text-red font-mono" id="waste-percent">⚠️ 100% Waste Overhead</div>
+                </div>
+
+                <!-- Stat Card: Saved Money -->
+                <div class="metric-card glass-container savings-alert" id="savings-card">
+                    <div class="card-bg-glow"></div>
+                    <div class="metric-header">
+                        <span class="metric-label font-space">Total Savings Secured</span>
+                        <div class="metric-icon-wrap bg-emerald">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><circle cx="12" cy="14" r="2"/></svg>
+                        </div>
+                    </div>
+                    <div class="metric-value font-space" id="metric-savings">$0.00</div>
+                    <div class="metric-trend text-green font-mono" id="savings-increment">+$0.00 secured now</div>
+                </div>
+
+                <!-- Stat Card: Efficiency Score -->
+                <div class="metric-card glass-container efficiency-alert" id="efficiency-card">
+                    <div class="card-bg-glow"></div>
+                    <div class="metric-header">
+                        <span class="metric-label font-space">Infrastructure Efficiency</span>
+                        <div class="metric-icon-wrap bg-violet">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                    </div>
+                    <div class="metric-progress-container">
+                        <div class="metric-value font-space" id="metric-efficiency">42%</div>
+                        <div class="efficiency-progress-bar">
+                            <div class="efficiency-progress-fill" id="efficiency-fill" style="width: 42%;"></div>
+                        </div>
+                    </div>
+                    <div class="metric-trend font-mono" id="efficiency-status">Grade: D- (Inefficient)</div>
+                </div>
+
+                <!-- Control Panel Card: Activate Agent -->
+                <div class="metric-card glass-container control-card">
+                    <div class="card-bg-glow"></div>
+                    <span class="metric-label font-space text-center block">Autonomous Engine Control</span>
+                    <button class="agent-toggle-btn font-space" id="agent-toggle-btn">
+                        <span class="btn-glow"></span>
+                        <span class="btn-text">🤖 ACTIVATE AUTONOMOUS AGENT</span>
+                    </button>
+                    <p class="control-helper text-center">Enable AI-driven auto-scaling & LLM cost routing policies in real-time.</p>
+                </div>
+            </section>
+
+            <!-- Workspace Content Row -->
+            <section class="content-row">
+                
+                <!-- Left Dynamic Tabs Area -->
+                <div class="main-workspace-panel glass-container">
+                    
+                    <!-- Dashboard Tabs -->
+                    <div class="panel-tabs">
+                        <button class="panel-tab-btn active font-space" data-panel="waste">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                            Cloud Waste Detective
+                        </button>
+                        <button class="panel-tab-btn font-space" data-panel="cop">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tab-icon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Smart LLM Traffic Cop
+                        </button>
+                    </div>
+
+                    <!-- Panel Content: Cloud Waste Detective -->
+                    <div class="panel-content active" id="panel-waste">
+                        <div class="panel-header">
+                            <h3 class="font-space">Cloud Waste Detective</h3>
+                            <p class="panel-subtitle">Identify zombie servers, idle databases, and detached storage volumes.</p>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table class="waste-table font-space">
+                                <thead>
+                                    <tr>
+                                        <th>Resource Name</th>
+                                        <th>Type</th>
+                                        <th>Avg CPU/Use</th>
+                                        <th>Monthly Cost</th>
+                                        <th>Status</th>
+                                        <th>Remediation Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="waste-table-body">
+                                    <!-- Populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Remediation Script Pane -->
+                        <div class="remediation-script-pane">
+                            <div class="script-header">
+                                <span class="script-title font-space">💻 AI-Generated Remediation Action Script</span>
+                                <div class="script-tabs">
+                                    <button class="script-tab active font-mono" data-lang="terraform">Terraform</button>
+                                    <button class="script-tab font-mono" data-lang="cli">AWS CLI</button>
+                                </div>
+                                <button class="btn btn-secondary btn-sm copy-btn font-space" id="copy-script-btn">Copy Script</button>
+                            </div>
+                            <pre class="script-code font-mono" id="script-code-block">// Select a zombie resource above to generate remediation code...</pre>
+                            <div class="remediation-actions font-space">
+                                <button class="btn btn-secondary font-space" id="test-script-btn" disabled>Test Script Sandbox</button>
+                                <button class="btn btn-danger font-space" id="remediate-item-btn" disabled>Apply Remediation Code</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel Content: Smart LLM Traffic Cop -->
+                    <div class="panel-content" id="panel-cop">
+                        <div class="panel-header">
+                            <h3 class="font-space">Smart LLM Traffic Cop</h3>
+                            <p class="panel-subtitle">Auto-route prompts to local, open-source models or premium commercial APIs based on query complexity.</p>
+                        </div>
+
+                        <div class="cop-grid">
+                            <!-- Left Form Column -->
+                            <div class="cop-form-side">
+                                <div class="form-group">
+                                    <label class="font-space">Select Test Prompt Preset</label>
+                                    <div class="preset-prompts-group">
+                                        <button class="preset-prompt-btn font-space" data-prompt="What is 2 + 2?">Simple Math</button>
+                                        <button class="preset-prompt-btn font-space" data-prompt="Correct my grammar: 'I has many server in my AWS account and some is zombies'">Grammar Tweak</button>
+                                        <button class="preset-prompt-btn font-space" data-prompt="Generate a complete Terraform module for a multi-region highly available Kubernetes cluster spanning AWS EKS, including auto-scaling groups, custom VPC subnets, route tables, IAM roles with least-privilege, and integrated Prometheus/Grafana monitoring dashboard configs. Make sure to optimize resource distribution.">Complex Infrastructure Architecting</button>
+                                        <button class="preset-prompt-btn font-space" data-prompt="Summarize this 100-page tax legislation document and extract key cloud deductions: [Document Attachment: IRS-Cloud-Infrstructure-Audit-Rules-2026.pdf]">Heavy Analysis Task</button>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cop-prompt-input" class="font-space">Type Custom AI Prompt</label>
+                                    <div class="prompt-textarea-wrapper">
+                                        <textarea id="cop-prompt-input" placeholder="Ask anything to test the routing brain..."></textarea>
+                                    </div>
+                                    <div class="prompt-actions">
+                                        <button class="btn btn-primary font-space" id="route-prompt-btn">Route Prompt & Calculate Cost</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right Decision Analysis Column -->
+                            <div class="cop-analytics-side">
+                                <h4 class="font-space section-title">Real-Time Routing Assessment</h4>
+                                
+                                <div class="routing-visual-flow">
+                                    <div class="flow-step font-space" id="flow-input">Prompt Input</div>
+                                    <div class="flow-connector">
+                                        <div class="pulse-line"></div>
+                                    </div>
+                                    <div class="flow-decision font-space" id="flow-decision">CloudOptima Router Heuristic</div>
+                                    <div class="flow-connector">
+                                        <div class="pulse-line"></div>
+                                    </div>
+                                    <div class="flow-step font-space" id="flow-output-model">Target LLM Model</div>
+                                </div>
+
+                                <div class="decision-details glass-container">
+                                    <div class="decision-row">
+                                        <span>Prompt Complexity Index:</span>
+                                        <strong id="cop-complexity-index" class="font-mono">0.00 / 10</strong>
+                                    </div>
+                                    <div class="decision-row">
+                                        <span>Calculated Input Tokens:</span>
+                                        <strong id="cop-input-tokens" class="font-mono">0 tkn</strong>
+                                    </div>
+                                    <div class="decision-row">
+                                        <span>Routed Target:</span>
+                                        <strong id="cop-routed-target" class="text-gradient font-space">-</strong>
+                                    </div>
+                                    <div class="decision-row">
+                                        <span>Est. Cost of Routing:</span>
+                                        <strong id="cop-route-cost" class="font-mono">$0.00</strong>
+                                    </div>
+                                    <div class="decision-row">
+                                        <span>Premium Model Base Cost:</span>
+                                        <strong id="cop-premium-cost" class="font-mono">$0.00</strong>
+                                    </div>
+                                    <div class="decision-row highlighted">
+                                        <span>Instant Cost Savings:</span>
+                                        <strong id="cop-cost-savings" class="text-green font-mono">$0.00 (0%)</strong>
+                                    </div>
+                                </div>
+
+                                <div class="routing-explanation font-space" id="routing-explanation">
+                                    Enter a prompt on the left or select a preset to evaluate the LLM Cost Router's decision brain.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Terminal Console Panel -->
+                <div class="terminal-workspace-panel glass-container">
+                    <div class="panel-header">
+                        <div class="panel-header-left">
+                            <span class="terminal-dot red"></span>
+                            <span class="terminal-dot yellow"></span>
+                            <span class="terminal-dot green"></span>
+                            <span class="terminal-title font-space">CloudOptima Live Agent Shell v1.0.4</span>
+                        </div>
+                        <button class="btn btn-secondary btn-xs font-space" id="clear-logs-btn">Clear Logs</button>
+                    </div>
+                    <div class="terminal-body font-mono" id="terminal-body">
+                        <!-- Terminal logs go here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bottom Analytics Charts Section -->
+            <section class="analytics-row">
+                <div class="analytics-card glass-container">
+                    <h3 class="font-space chart-title">Cloud Infrastructure Spend Allocation</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="cloud-spend-chart"></canvas>
+                    </div>
+                </div>
+                <div class="analytics-card glass-container">
+                    <h3 class="font-space chart-title">LLM Query Routing Heuristics</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="llm-routing-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 6. OPTIONS DRAWER / SIDE OVERLAY MODAL -->
+    <div id="options-drawer" class="options-drawer">
+        <div class="drawer-overlay" id="drawer-overlay"></div>
+        <div class="drawer-content glass-container">
+            <div class="drawer-header">
+                <h2 class="font-space text-gradient">CLOUDO<span class="text-white">PTIMA</span> Settings & Info</h2>
+                <button class="icon-btn close-btn" id="close-options-btn" aria-label="Close options drawer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            
+            <div class="drawer-body">
+                <!-- Tab Controls inside Drawer -->
+                <div class="drawer-tabs">
+                    <button class="drawer-tab-btn active font-space" data-drawer-tab="about">About CloudOptima</button>
+                    <button class="drawer-tab-btn font-space" data-drawer-tab="guide">User Guide</button>
+                    <button class="drawer-tab-btn font-space" data-drawer-tab="creator">Creator Profile</button>
+                </div>
+
+                <!-- Drawer Content: About -->
+                <div class="drawer-tab-content active" id="drawer-tab-about">
+                    <div class="drawer-section">
+                        <h3 class="font-space text-green">💡 The Core Concept</h3>
+                        <p>CloudOptima is an AI-powered financial operations assistant (a <strong>FinOps Agent</strong>) designed to automate cost efficiency inside complex cloud infrastructures and large language model (LLM) API layers.</p>
+                        <p>Tech companies bleed vast portions of their budgets due to two critical issues:</p>
+                        <ul>
+                            <li><strong>Cloud Over-Provisioning:</strong> Unused, orphaned, or massive cloud virtual machines left running 24/7.</li>
+                            <li><strong>LLM Cost Inefficiency:</strong> Routing low-complexity everyday tasks to premium models (like GPT-4/Claude 3.5) when smaller local models can complete the work at a fraction of the cost.</li>
+                        </ul>
+                        <p>CloudOptima actively scans cloud tenants and incoming AI query streams, acting as a real-time smart auto-saving brain capable of slashing infrastructure overheads by <strong>up to 40%</strong>.</p>
+                    </div>
+                    
+                    <div class="drawer-section">
+                        <h3 class="font-space text-violet">⚙️ System Architecture</h3>
+                        <div class="architecture-flow-vertical">
+                            <div class="arch-box">
+                                <strong class="font-space">Cloud Tenant Ingestion</strong>
+                                <span class="font-mono">EC2/GCP Scans • IAM Security API</span>
+                            </div>
+                            <div class="arch-arrow">⬇️</div>
+                            <div class="arch-box">
+                                <strong class="font-space">Cloud Waste Detective</strong>
+                                <span class="font-mono">Low-Usage Flags • IaC Repair generator</span>
+                            </div>
+                            <div class="arch-arrow">⬇️</div>
+                            <div class="arch-box">
+                                <strong class="font-space">Smart LLM Traffic Cop</strong>
+                                <span class="font-mono">Semantic Classifier • Cost Router</span>
+                            </div>
+                            <div class="arch-arrow">⬇️</div>
+                            <div class="arch-box">
+                                <strong class="font-space">Autonomous Agent Orchestration</strong>
+                                <span class="font-mono">Continuous Loop Optimization</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drawer Content: User Guide -->
+                <div class="drawer-tab-content" id="drawer-tab-guide">
+                    <div class="drawer-section">
+                        <h3 class="font-space text-indigo">📖 How To Use The Platform</h3>
+                        <ol class="guide-steps">
+                            <li>
+                                <strong>Login & Two-Factor Authentication:</strong>
+                                <p>Begin by creating a credentials ID on the Signup tab or logging in. Complete the 2FA step using either the simulated Email OTP or SMS Push Code displayed in the notification hub popups.</p>
+                            </li>
+                            <li>
+                                <strong>Link Cloud Provider Account:</strong>
+                                <p>Provide details for your simulated organization and cloud provider keys. CloudOptima hooks into AWS CloudWatch APIs, loading resources for diagnostics.</p>
+                            </li>
+                            <li>
+                                <strong>Run Waste Scans & Downscale Servers:</strong>
+                                <p>Navigate to the <strong>Cloud Waste Detective</strong> tab. Select individual row items in the infrastructure table. View the dynamically compiled Terraform or AWS CLI script required to shut down or resize that resource. Click "Apply Remediation Code" to optimize single items.</p>
+                            </li>
+                            <li>
+                                <strong>Test the Smart LLM Traffic Cop:</strong>
+                                <p>Switch to the <strong>Smart LLM Traffic Cop</strong> tab. Select standard prompt presets or type a custom query. Click "Route Prompt". Watch as the engine measures complexity, routes to the appropriate model, and updates the telemetry charts with saved dollars.</p>
+                            </li>
+                            <li>
+                                <strong>Engage Full Autonomous Mode:</strong>
+                                <p>Toggle the primary button: <code>Activate CloudOptima Autonomous Agent</code>. The agent takes control, scanning resources, executing scripts, routing incoming query streams, and driving the cost waste overhead down to zero in real-time.</p>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Drawer Content: Creator Profile -->
+                <div class="drawer-tab-content" id="drawer-tab-creator">
+                    <div class="creator-card glass-container">
+                        <div class="creator-avatar-wrap">
+                            <div class="creator-avatar">SMR</div>
+                        </div>
+                        <div class="creator-details text-center">
+                            <h3 class="font-space creator-name">SARIKONDA MANOHAR RAJU</h3>
+                            <p class="creator-role font-mono text-gradient">Web Developer | Full-Stack Development | Cloud-Native Solutions | Independent Developer</p>
+                            
+                            <div class="creator-bio font-space">
+                                Designing and engineering scalable cloud-native architectures, autonomous agent workflows, and premium interactive user dashboards to bridge operations with financial efficiency.
+                            </div>
+                            
+                            <h4 class="font-space section-title">Connect With The Creator</h4>
+                            <div class="social-links-grid font-space">
+                                <a href="https://www.linkedin.com/in/sarikonda-manohar-raju-614bba27a" target="_blank" rel="noopener noreferrer" class="social-link linkedin">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="social-icon"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                                    LinkedIn
+                                </a>
+                                <a href="https://github.com/manoharrajusarikonda331-mani" target="_blank" rel="noopener noreferrer" class="social-link github">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="social-icon"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                                    GitHub
+                                </a>
+                                <a href="https://www.instagram.com/manohar_raju_officiall_331" target="_blank" rel="noopener noreferrer" class="social-link instagram">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="social-icon"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                                    Instagram
+                                </a>
+                                <a href="https://youtube.com/@manohar_raju_officiall_331" target="_blank" rel="noopener noreferrer" class="social-link youtube">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="social-icon"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 11.54a29 29 0 0 0 .46 5.12 2.78 2.78 0 0 0 1.95 1.96C5.12 19 12 19 12 19s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96 29 29 0 0 0 .46-5.12 29 29 0 0 0-.46-5.12z"/><polygon points="9.75 15.02 15.5 11.54 9.75 8.05 9.75 15.02"/></svg>
+                                    YouTube
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Scripts -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
