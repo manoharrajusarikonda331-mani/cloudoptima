@@ -584,6 +584,7 @@
                     <button class="drawer-tab-btn active font-space" data-drawer-tab="about">About CloudOptima</button>
                     <button class="drawer-tab-btn font-space" data-drawer-tab="guide">User Guide</button>
                     <button class="drawer-tab-btn font-space" data-drawer-tab="creator">Creator Profile</button>
+                    <button class="drawer-tab-btn font-space" data-drawer-tab="support">Feedback & Help</button>
                 </div>
 
                 <!-- Drawer Content: About -->
@@ -687,6 +688,58 @@
                                     YouTube
                                 </a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Drawer Content: Feedback & Support -->
+                <div class="drawer-tab-content" id="drawer-tab-support">
+                    <div class="drawer-section">
+                        <h3 class="font-space text-green">🗣️ Quick User Feedback</h3>
+                        <p>We'd love to hear your thoughts on CloudOptima! Rate our FinOps engine and leave your suggestions below.</p>
+                        
+                        <form id="feedback-form" class="feedback-form">
+                            <!-- Star Rating -->
+                            <div class="rating-stars-container">
+                                <span class="star-rating-label font-space">Engine Performance Rating:</span>
+                                <div class="stars-group" id="feedback-stars">
+                                    <span class="star-btn" data-value="1">★</span>
+                                    <span class="star-btn" data-value="2">★</span>
+                                    <span class="star-btn" data-value="3">★</span>
+                                    <span class="star-btn" data-value="4">★</span>
+                                    <span class="star-btn" data-value="5">★</span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="feedback-text">Feedback Comments</label>
+                                <textarea id="feedback-text" required placeholder="What features did you like? Any recommendations?..." style="height: 90px; padding: 12px; resize: none; background: rgba(0,0,0,0.25); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-primary); outline: none; font-family: inherit; font-size: 13px;"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-sm font-space" style="width: auto; align-self: flex-end;">Submit Feedback</button>
+                        </form>
+                        
+                        <div id="feedback-success-msg" class="feedback-success-msg hidden font-space text-green" style="margin-top: 10px; display: flex; align-items: center; gap: 8px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="height: 18px; width: 18px; flex-shrink: 0;"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Thank you! Your feedback has been received.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="drawer-section" style="border-top: 1px solid var(--border-glass); padding-top: 20px;">
+                        <h3 class="font-space text-red">🚨 Encountering Errors or Need Help?</h3>
+                        <p>If you experience any deployment anomalies, Terraform script parser failures, or IAM gateway errors, our team is ready to assist you.</p>
+                        
+                        <div class="support-card glass-container" style="padding: 16px; display: flex; flex-direction: column; gap: 12px; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.03);">
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red" style="height: 20px; width: 20px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                <strong class="font-space" style="font-size: 13px; color: #ffffff;">CloudOptima Support Desk</strong>
+                            </div>
+                            <span style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">Contact the lead engineer directly for rapid troubleshooting, architectural consultations, or integration adjustments.</span>
+                            
+                            <a href="https://www.linkedin.com/in/sarikonda-manohar-raju-614bba27a" target="_blank" rel="noopener noreferrer" class="btn btn-danger btn-sm font-space text-center" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="height: 16px; width: 16px;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                                Contact Team on LinkedIn
+                            </a>
                         </div>
                     </div>
                 </div>

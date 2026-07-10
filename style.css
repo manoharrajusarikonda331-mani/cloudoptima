@@ -1924,3 +1924,41 @@ body {
         border-radius: 0;
     }
 }
+
+/* Rating Stars & Feedback CSS */
+.rating-stars-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.star-rating-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.stars-group {
+    display: flex;
+    gap: 4px;
+}
+.star-btn {
+    font-size: 24px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+.star-btn:hover,
+.star-btn.hover,
+.star-btn.active {
+    color: #fbbf24;
+    transform: scale(1.15);
+}
+.feedback-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.feedback-success-msg.hidden {
+    display: none !important;
+}
+

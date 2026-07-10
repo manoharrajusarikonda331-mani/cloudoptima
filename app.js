@@ -687,6 +687,72 @@ function bindOptionsDrawerEvents() {
             document.getElementById(`drawer-tab-${btn.dataset.drawerTab}`).classList.add("active");
         });
     });
+
+    // Star rating handler
+    const starBtns = document.querySelectorAll("#feedback-stars .star-btn");
+    let currentRating = 0;
+
+    starBtns.forEach(star => {
+        // Hover effect
+        star.addEventListener("mouseover", () => {
+            const val = parseInt(star.dataset.value);
+            starBtns.forEach(s => {
+                if (parseInt(s.dataset.value) <= val) {
+                    s.classList.add("hover");
+                } else {
+                    s.classList.remove("hover");
+                }
+            });
+        });
+
+        star.addEventListener("mouseout", () => {
+            starBtns.forEach(s => s.classList.remove("hover"));
+        });
+
+        // Click to set rating
+        star.addEventListener("click", () => {
+            currentRating = parseInt(star.dataset.value);
+            starBtns.forEach(s => {
+                if (parseInt(s.dataset.value) <= currentRating) {
+                    s.classList.add("active");
+                } else {
+                    s.classList.remove("active");
+                }
+            });
+            Logger.log(`Feedback Rating selected: ${currentRating}/5 stars.`, "info");
+        });
+    });
+
+    // Feedback form submission
+    const feedbackForm = document.getElementById("feedback-form");
+    const feedbackSuccess = document.getElementById("feedback-success-msg");
+
+    if (feedbackForm) {
+        feedbackForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            const feedbackText = document.getElementById("feedback-text").value;
+
+            if (currentRating === 0) {
+                Logger.log("Feedback submission failed: Please select a star rating first.", "warn");
+                return;
+            }
+
+            Logger.log(`[USER-FEEDBACK] Received rating: ${currentRating}/5. Comments: "${feedbackText}"`, "success");
+            
+            // Hide form and show success
+            feedbackForm.style.display = "none";
+            feedbackSuccess.classList.remove("hidden");
+
+            // Reset after a delay
+            setTimeout(() => {
+                feedbackForm.reset();
+                currentRating = 0;
+                starBtns.forEach(s => s.classList.remove("active"));
+                feedbackForm.style.display = "flex";
+                feedbackSuccess.classList.add("hidden");
+            }, 8000);
+        });
+    }
 }
 
 /* ==========================================================================
