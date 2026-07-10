@@ -371,6 +371,97 @@ function bindCompanyLinkEvents() {
         const accountId = document.getElementById("cloud-account-id").value;
         const roleArn = document.getElementById("cloud-role-arn").value;
 
+        const user = AppState.state.user;
+        const email = user.email || "";
+        const domain = email.includes("@") ? email.split("@")[1].toLowerCase() : "";
+        const publicDomains = ["gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com", "aol.com", "mail.com"];
+
+        // Clear console logs
+        consoleLogs.innerHTML = "";
+
+        // Hide form, show loading
+        linkForm.style.display = "none";
+        loadingWrap.classList.remove("hidden");
+
+        // Helper to show failure and restore form
+        const failConnection = (errorMsg) => {
+            const errLine = document.createElement("div");
+            errLine.className = "text-red font-mono";
+            errLine.style.fontSize = "12px";
+            errLine.style.margin = "8px 0";
+            errLine.innerHTML = `[ERROR] ${errorMsg}`;
+            consoleLogs.appendChild(errLine);
+
+            const retryBtn = document.createElement("button");
+            retryBtn.type = "button";
+            retryBtn.className = "btn btn-secondary btn-sm font-space";
+            retryBtn.style.marginTop = "16px";
+            retryBtn.textContent = "Adjust Configuration";
+            retryBtn.addEventListener("click", () => {
+                loadingWrap.classList.add("hidden");
+                linkForm.style.display = "block";
+            });
+            consoleLogs.appendChild(retryBtn);
+            consoleLogs.scrollTop = consoleLogs.scrollHeight;
+            Logger.log(`Cloud Integration Blocked: ${errorMsg}`, "warn");
+        };
+
+        // 1. Validate Email Domain
+        if (publicDomains.includes(domain)) {
+            setTimeout(() => {
+                const line = document.createElement("div");
+                line.className = "font-mono text-muted";
+                line.style.fontSize = "12px";
+                line.textContent = `[SYSTEM] Analyzing user credentials for ${email}...`;
+                consoleLogs.appendChild(line);
+            }, 300);
+
+            setTimeout(() => {
+                failConnection(`Corporate domain verification failed. Personal email provider (@${domain}) is not authorized for cloud integration. Please logout and signup with a corporate domain (e.g. name@company.com).`);
+            }, 1200);
+            return;
+        }
+
+        // 2. Validate AWS Account ID
+        if (cloudProvider === "AWS") {
+            const isDigitOnly = /^\d{12}$/.test(accountId);
+            if (!isDigitOnly) {
+                setTimeout(() => {
+                    failConnection(`Invalid Account ID format. AWS Account ID must be exactly a 12-digit numeric identifier.`);
+                }, 600);
+                return;
+            }
+
+            // 3. Validate AWS Role ARN
+            // arn:aws:iam::123456789012:role/role-name
+            const arnPattern = /^arn:aws:iam::(\d{12}):role\/[\w+=,.@-]+$/;
+            const match = roleArn.match(arnPattern);
+            if (!match) {
+                setTimeout(() => {
+                    failConnection(`Invalid AWS Role ARN format. Must match pattern: arn:aws:iam::[12-digit-account-id]:role/[role-name]`);
+                }, 600);
+                return;
+            }
+
+            const arnAccountId = match[1];
+            if (arnAccountId !== accountId) {
+                setTimeout(() => {
+                    failConnection(`Security Token Mismatch. The account ID in the Role ARN (${arnAccountId}) does not match the Account ID entered (${accountId}).`);
+                }, 600);
+                return;
+            }
+        } else if (cloudProvider === "GCP") {
+            // GCP Project ID check
+            const gcpPattern = /^[a-z0-9-]+$/;
+            if (!gcpPattern.test(accountId)) {
+                setTimeout(() => {
+                    failConnection(`Invalid Project ID format. GCP Project ID can only contain lowercase letters, numbers, and hyphens.`);
+                }, 600);
+                return;
+            }
+        }
+
+        // Save valid details
         AppState.updateUser({
             linkedCompany: orgName,
             cloudProvider,
@@ -378,10 +469,6 @@ function bindCompanyLinkEvents() {
             roleArn,
             loggedIn: true
         });
-
-        // Hide form, show loading
-        linkForm.style.display = "none";
-        loadingWrap.classList.remove("hidden");
 
         // Simulate connection outputs
         const logs = [
