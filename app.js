@@ -473,6 +473,9 @@ function updateDashboardUI(state) {
 
     // Update charts data
     updateCharts(state.history);
+
+    // Render support feedback feed
+    renderFeedbackFeed(state);
 }
 
 function bindDashboardEvents() {
@@ -737,6 +740,10 @@ function bindOptionsDrawerEvents() {
                 return;
             }
 
+            // Add feedback to the app state
+            const currentUser = AppState.state.user;
+            AppState.addFeedback(currentUser.name, currentUser.role, currentRating, feedbackText);
+
             Logger.log(`[USER-FEEDBACK] Received rating: ${currentRating}/5. Comments: "${feedbackText}"`, "success");
             
             // Hide form and show success
@@ -771,4 +778,79 @@ function transitionView(fromScreenId, toScreenId) {
             toEl.classList.add("active");
         }, 300);
     }
+}
+
+/* ==========================================================================
+   PUBLIC FEEDBACK FEED DRAWING UTILITY
+   ========================================================================== */
+function renderFeedbackFeed(state) {
+    const feedContainer = document.getElementById("feedback-terminal-feed");
+    const feedCountEl = document.getElementById("feedback-feed-count");
+    if (!feedContainer) return;
+
+    // Filter feedbacks by 30 days limit
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    const filteredFeedbacks = state.feedbacks.filter(fb => {
+        const fbTime = new Date(fb.timestamp).getTime();
+        return fbTime >= thirtyDaysAgo;
+    });
+
+    feedCountEl.textContent = `${filteredFeedbacks.length} Feedbacks`;
+    feedContainer.innerHTML = "";
+
+    if (filteredFeedbacks.length === 0) {
+        feedContainer.innerHTML = `<div class="text-center font-space" style="font-size: 12px; color: var(--text-muted); padding: 20px;">No public feedback posted in the last 30 days.</div>`;
+        return;
+    }
+
+    // Check if current user is admin (Manohar Raju / Sarikonda)
+    const isAdmin = state.user.name.toLowerCase().includes("manohar") || state.user.name.toLowerCase().includes("sarikonda");
+
+    filteredFeedbacks.forEach(fb => {
+        const item = document.createElement("div");
+        item.className = "feedback-feed-item";
+
+        const starsStr = "★".repeat(fb.rating) + "☆".repeat(5 - fb.rating);
+        const fbDate = new Date(fb.timestamp);
+        const dateStr = fbDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        // Add Delete Button if Admin
+        let deleteBtnHtml = "";
+        if (isAdmin) {
+            deleteBtnHtml = `
+                <button class="feedback-delete-btn" data-id="${fb.id}" title="Delete feedback (Admin only)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="height:12px; width:12px;"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+            `;
+        }
+
+        item.innerHTML = `
+            <div class="feedback-item-header font-space">
+                <div class="feedback-item-user">
+                    <span class="feedback-user-name">${fb.name}</span>
+                    <span class="feedback-user-role">${fb.role}</span>
+                </div>
+                <div class="feedback-item-meta">
+                    <span class="feedback-item-stars">${starsStr}</span>
+                    <span class="feedback-item-date font-mono">${dateStr}</span>
+                </div>
+            </div>
+            <div class="feedback-item-text font-space">${fb.comment}</div>
+            ${deleteBtnHtml}
+        `;
+
+        // Handle delete event
+        const delBtn = item.querySelector(".feedback-delete-btn");
+        if (delBtn) {
+            delBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                if (confirm(`Are you sure you want to delete this feedback from the public feed?`)) {
+                    AppState.deleteFeedback(fb.id);
+                    Logger.log(`Admin action: Deleted feedback entry ID ${fb.id}.`, "warn");
+                }
+            });
+        }
+
+        feedContainer.appendChild(item);
+    });
 }

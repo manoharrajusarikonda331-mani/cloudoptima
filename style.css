@@ -1962,3 +1962,103 @@ body {
     display: none !important;
 }
 
+/* Feedback Terminal Feed CSS */
+.feedback-terminal-feed {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    padding: 12px;
+    max-height: 280px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feedback-feed-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-glass);
+    border-radius: 8px;
+    padding: 12px;
+    position: relative;
+    transition: var(--transition-smooth);
+}
+
+.feedback-feed-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.feedback-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    padding-right: 28px; /* Give room for delete button */
+}
+
+.feedback-item-user {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.feedback-user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.feedback-user-role {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.feedback-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.feedback-item-stars {
+    color: #fbbf24;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.feedback-item-date {
+    font-size: 10px;
+    color: var(--text-muted);
+}
+
+.feedback-item-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.feedback-delete-btn {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    color: var(--accent-crimson);
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    position: absolute;
+    top: 12px;
+    right: 12px;
+}
+
+.feedback-delete-btn:hover {
+    background: var(--accent-crimson);
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
+

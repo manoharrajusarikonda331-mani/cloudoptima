@@ -130,11 +130,76 @@ class StateManager {
             ],
             
             // Log History (saved session logs)
-            logs: []
+            logs: [],
+
+            // Feedbacks list
+            feedbacks: JSON.parse(localStorage.getItem('cloudoptima_feedbacks')) || [
+                {
+                    id: "fb-1",
+                    name: "Alex Carter",
+                    role: "DevOps Engineer",
+                    rating: 5,
+                    comment: "The Terraform repair script generator is a life-saver! Saved us hours of manual server audits.",
+                    timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: "fb-2",
+                    name: "Sofia Rodriguez",
+                    role: "CFO / Finance Director",
+                    rating: 4,
+                    comment: "Decent cost Offloader. Offloading simple queries to local models reduced our API bill by 35% this week.",
+                    timestamp: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString()
+                },
+                {
+                    id: "fb-3",
+                    name: "Rajesh Kumar",
+                    role: "Solutions Architect",
+                    rating: 5,
+                    comment: "Autonomous mode runs flawlessly. Swept our staging zone and resized instances instantly. Very robust dashboard.",
+                    timestamp: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
+                }
+            ]
         };
         
         // Listeners for telemetry or state changes
         this.listeners = [];
+    }
+
+    // Save feedbacks array to LocalStorage
+    saveFeedbacks() {
+        localStorage.setItem('cloudoptima_feedbacks', JSON.stringify(this.state.feedbacks));
+    }
+
+    // Add a new user feedback item
+    addFeedback(name, role, rating, comment) {
+        const newFb = {
+            id: 'fb-' + Math.random().toString(36).substring(2, 9),
+            name: name || "Anonymous User",
+            role: role || "Cloud Operator",
+            rating: parseInt(rating),
+            comment: comment,
+            timestamp: new Date().toISOString()
+        };
+        this.state.feedbacks.unshift(newFb);
+        this.saveFeedbacks();
+        this.notify();
+        return newFb;
+    }
+
+    // Delete feedback (Admin function)
+    deleteFeedback(id) {
+        this.state.feedbacks = this.state.feedbacks.filter(f => f.id !== id);
+        this.saveFeedbacks();
+        this.notify();
+    }
+
+    // Get feedbacks within 30 days limit
+    getFilteredFeedbacks() {
+        const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        return this.state.feedbacks.filter(fb => {
+            const fbTime = new Date(fb.timestamp).getTime();
+            return fbTime >= thirtyDaysAgo;
+        });
     }
 
     // Subscribe to state updates
