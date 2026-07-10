@@ -363,6 +363,28 @@ function bindCompanyLinkEvents() {
     const consoleLogs = document.getElementById("connector-console-logs");
     const loadingWrap = document.getElementById("connector-loading");
 
+    const providerRadios = document.querySelectorAll("input[name='cloud-provider']");
+    const accountLabel = document.querySelector("label[for='cloud-account-id']");
+    const accountInput = document.getElementById("cloud-account-id");
+    const roleLabel = document.querySelector("label[for='cloud-role-arn']");
+    const roleInput = document.getElementById("cloud-role-arn");
+
+    providerRadios.forEach(radio => {
+        radio.addEventListener("change", () => {
+            if (radio.value === "AWS") {
+                if (accountLabel) accountLabel.textContent = "AWS Account ID";
+                if (accountInput) accountInput.placeholder = "AWS Account ID (12 digits)";
+                if (roleLabel) roleLabel.textContent = "Role ARN";
+                if (roleInput) roleInput.placeholder = "arn:aws:iam::123456789012:role/FinOps";
+            } else if (radio.value === "GCP") {
+                if (accountLabel) accountLabel.textContent = "GCP Project ID";
+                if (accountInput) accountInput.placeholder = "GCP Project ID (e.g. project-id-123)";
+                if (roleLabel) roleLabel.textContent = "Service Account Private Key (JSON)";
+                if (roleInput) roleInput.placeholder = '{"type": "service_account", "project_id": "gcp-prod-101"}';
+            }
+        });
+    });
+
     linkForm.addEventListener("submit", (e) => {
         e.preventDefault();
         
@@ -456,6 +478,19 @@ function bindCompanyLinkEvents() {
             if (!gcpPattern.test(accountId)) {
                 setTimeout(() => {
                     failConnection(`Invalid Project ID format. GCP Project ID can only contain lowercase letters, numbers, and hyphens.`);
+                }, 600);
+                return;
+            }
+
+            // Validate GCP Service Account JSON format
+            try {
+                const parsedJSON = JSON.parse(roleArn);
+                if (parsedJSON.type !== "service_account" || !parsedJSON.project_id) {
+                    throw new Error("Missing service account fields");
+                }
+            } catch (err) {
+                setTimeout(() => {
+                    failConnection(`Invalid GCP Service Account configuration. Must be a valid JSON credential block containing "type": "service_account" and "project_id".`);
                 }, 600);
                 return;
             }
