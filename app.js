@@ -760,6 +760,122 @@ function bindOptionsDrawerEvents() {
             }, 8000);
         });
     }
+
+    // AI Chat Support Event Listeners
+    const chatInput = document.getElementById("support-chat-input");
+    const chatSendBtn = document.getElementById("support-chat-send-btn");
+    const chatLog = document.getElementById("support-chat-log");
+
+    const lockedCard = document.getElementById("support-card-locked");
+    const unlockedCard = document.getElementById("support-card-unlocked");
+    const linkedinAutoMsg = document.getElementById("linkedin-auto-msg");
+    const linkedinBtn = document.getElementById("linkedin-contact-btn");
+
+    if (chatSendBtn && chatInput) {
+        const sendChatMessage = () => {
+            const query = chatInput.value.trim();
+            if (query === "") return;
+
+            // Clear input
+            chatInput.value = "";
+
+            // Append User message
+            const userBubble = document.createElement("div");
+            userBubble.className = "chat-bubble user";
+            userBubble.innerHTML = `<strong>You:</strong> ${query}`;
+            chatLog.appendChild(userBubble);
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            // Typing indicator
+            const typingBubble = document.createElement("div");
+            typingBubble.className = "chat-bubble ai typing";
+            typingBubble.innerHTML = "<em>AI Assistant is thinking...</em>";
+            chatLog.appendChild(typingBubble);
+            chatLog.scrollTop = chatLog.scrollHeight;
+
+            // Log query event in UNIX terminal
+            Logger.log(`AI Support Chat query: "${query}"`, "info");
+
+            // Process response
+            setTimeout(() => {
+                typingBubble.remove();
+                
+                const lowerQuery = query.toLowerCase();
+                let response = "";
+
+                if (lowerQuery.includes("terraform") || lowerQuery.includes("permission") || lowerQuery.includes("iam") || lowerQuery.includes("access") || lowerQuery.includes("deny")) {
+                    response = "<strong>AI Assistant:</strong> Terraform Access Denied / Permission Error detected.<br><br><strong>Actionable Steps:</strong><br>1. Confirm your cloud role has <code>sts:AssumeRole</code> policy credentials attached.<br>2. Ensure Billing and CloudWatch ReadOnlyAccess configs are mapped.<br>3. Verify your local AWS config matches the Account ID.";
+                } else if (lowerQuery.includes("rds") || lowerQuery.includes("database") || lowerQuery.includes("timeout") || lowerQuery.includes("db")) {
+                    response = "<strong>AI Assistant:</strong> Database Connection/Waste anomaly detected.<br><br><strong>Actionable Steps:</strong><br>1. Check if <code>dev-analytics-db</code> database has active connections.<br>2. To remediate safely, create a final snapshot when deleting: <code>aws rds delete-db-instance --skip-final-snapshot</code>.<br>3. You can click 'Remediate' directly in the waste table.";
+                } else if (lowerQuery.includes("agent") || lowerQuery.includes("autonomous") || lowerQuery.includes("auto") || lowerQuery.includes("run")) {
+                    response = "<strong>AI Assistant:</strong> Autonomous Mode operational guidance.<br><br><strong>Actionable Steps:</strong><br>1. Toggle the big red control panel button in the hero area.<br>2. Keep the logs terminal open to watch live automation cycles.<br>3. Sweeps run every 4 seconds, and LLM routes run every 3 seconds.";
+                } else {
+                    response = "<strong>AI Assistant:</strong> Query evaluated.<br><br><strong>Actionable Steps:</strong><br>1. Ensure your linked organization credentials are correct.<br>2. Review the live metrics graphs on the dashboard.<br>3. If this did not resolve your issue, I have unlocked the LinkedIn contact card below so you can ask the lead developer directly.";
+                }
+
+                const aiBubble = document.createElement("div");
+                aiBubble.className = "chat-bubble ai";
+                aiBubble.innerHTML = response;
+                chatLog.appendChild(aiBubble);
+                chatLog.scrollTop = chatLog.scrollHeight;
+
+                // Unlock LinkedIn contact desk
+                if (lockedCard && unlockedCard) {
+                    lockedCard.classList.add("hidden");
+                    unlockedCard.classList.remove("hidden");
+                }
+
+                // Generate LinkedIn pre-filled message template
+                if (linkedinAutoMsg) {
+                    const company = AppState.state.user.linkedCompany;
+                    const truncatedQuery = query.length > 40 ? query.substring(0, 37) + "..." : query;
+                    linkedinAutoMsg.value = `Hello Sarikonda Manohar Raju, I am a user of the CloudOptima Engine (linked to company: ${company}). I tried resolving my query about "${truncatedQuery}" using the AI Chat Box suggestions but still need assistance. Let's connect!`;
+                }
+
+            }, 1000);
+        };
+
+        chatSendBtn.addEventListener("click", sendChatMessage);
+        chatInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                sendChatMessage();
+            }
+        });
+    }
+
+    // LinkedIn copy welcome message and open profile handler
+    if (linkedinBtn) {
+        linkedinBtn.addEventListener("click", () => {
+            if (linkedinAutoMsg) {
+                const messageText = linkedinAutoMsg.value;
+                navigator.clipboard.writeText(messageText).then(() => {
+                    Logger.log("LinkedIn welcome message copied to clipboard. Redirecting to Creator profile...", "info");
+                    
+                    // Show custom toast notification
+                    const hub = document.getElementById('notification-hub');
+                    const toast = document.createElement('div');
+                    toast.className = 'toast-notification';
+                    toast.innerHTML = `
+                        <div class="toast-icon-wrap" style="background: rgba(16, 185, 129, 0.1); color: var(--accent-emerald);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="height:18px; width:18px;"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="toast-content">
+                            <div class="toast-title font-space">Message Copied!</div>
+                            <div class="toast-message font-space">LinkedIn request message copied. Paste it directly when sending your connection invite!</div>
+                        </div>
+                    `;
+                    hub.appendChild(toast);
+                    
+                    setTimeout(() => toast.remove(), 4000);
+
+                    // Open LinkedIn in a new window
+                    setTimeout(() => {
+                        window.open("https://www.linkedin.com/in/sarikonda-manohar-raju-614bba27a", "_blank");
+                    }, 500);
+                });
+            }
+        });
+    }
 }
 
 /* ==========================================================================

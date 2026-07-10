@@ -737,20 +737,48 @@
                     </div>
                     
                     <div class="drawer-section" style="border-top: 1px solid var(--border-glass); padding-top: 20px;">
-                        <h3 class="font-space text-red">🚨 Encountering Errors or Need Help?</h3>
-                        <p>If you experience any deployment anomalies, Terraform script parser failures, or IAM gateway errors, our team is ready to assist you.</p>
+                        <h3 class="font-space text-violet" style="margin-bottom: 8px; font-size: 15px;">🤖 AI Troubleshooting Chat</h3>
+                        <p>Ask our AI troubleshooter to solve your issues instantly. <em>(Required before contacting support)</em></p>
                         
-                        <div class="support-card glass-container" style="padding: 16px; display: flex; flex-direction: column; gap: 12px; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.03);">
+                        <div class="support-chat-wrapper glass-container">
+                            <div class="support-chat-messages font-space" id="support-chat-log">
+                                <div class="chat-bubble ai">
+                                    <strong>AI Assistant:</strong> Hello! Please describe any cloud deployment errors (e.g. Terraform access denied, RDS timeout) or routing questions you are facing.
+                                </div>
+                            </div>
+                            <div class="support-chat-input-row">
+                                <input type="text" id="support-chat-input" placeholder="Describe your error or ask a question..." style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px; flex-grow: 1; outline: none; font-family: inherit;">
+                                <button id="support-chat-send-btn" class="btn btn-primary btn-sm font-space" style="width: auto;">Send</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="drawer-section" style="border-top: 1px solid var(--border-glass); padding-top: 20px;">
+                        <h3 class="font-space text-red" style="font-size: 15px;">🚨 Still Need Help? Contact Developer</h3>
+                        
+                        <!-- Locked State -->
+                        <div id="support-card-locked" class="support-card-locked text-center font-space">
+                            🔒 LinkedIn Contact is locked. Please chat with the AI troubleshooter above first to try and resolve the error.
+                        </div>
+
+                        <!-- Unlocked State (Hidden initially) -->
+                        <div id="support-card-unlocked" class="support-card glass-container hidden" style="padding: 16px; display: flex; flex-direction: column; gap: 12px; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.03);">
                             <div style="display: flex; gap: 10px; align-items: center;">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red" style="height: 20px; width: 20px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-red" style="height: 20px; width: 20px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                                 <strong class="font-space" style="font-size: 13px; color: #ffffff;">CloudOptima Support Desk</strong>
                             </div>
-                            <span style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">Contact the lead engineer directly for rapid troubleshooting, architectural consultations, or integration adjustments.</span>
+                            <span style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">If the AI suggestions did not solve your issue, you can now contact the developer on LinkedIn.</span>
                             
-                            <a href="https://www.linkedin.com/in/sarikonda-manohar-raju-614bba27a" target="_blank" rel="noopener noreferrer" class="btn btn-danger btn-sm font-space text-center" style="display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;">
+                            <!-- Auto-generated welcome/request message -->
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label style="font-size: 10px; color: var(--text-muted); text-transform: none; font-weight: normal; letter-spacing: normal;">Auto-Generated Welcome & Request Message (Copy this to send):</label>
+                                <textarea id="linkedin-auto-msg" readonly style="height: 80px; padding: 8px; resize: none; background: rgba(0,0,0,0.35); border: 1px solid var(--border-glass); border-radius: 6px; color: #e2e8f0; font-size: 11px; font-family: inherit; line-height: 1.4; outline: none; width: 100%; box-sizing: border-box;"></textarea>
+                            </div>
+                            
+                            <button id="linkedin-contact-btn" class="btn btn-danger btn-sm font-space" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="height: 16px; width: 16px;"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-                                Contact Team on LinkedIn
-                            </a>
+                                Copy Message & Connect on LinkedIn
+                            </button>
                         </div>
                     </div>
                 </div>
