@@ -114,10 +114,48 @@ function bindAuthEvents() {
         transitionView("auth-screen", "two-factor-screen");
     });
 
-    // Bypass Button (Direct access to sandbox dashboard)
+    // Sandbox Password Verification bindings
+    const passModal = document.getElementById("sandbox-password-modal");
+    const passInput = document.getElementById("sandbox-admin-pass-input");
+    const passError = document.getElementById("sandbox-pass-error");
+    const cancelBtn = document.getElementById("sandbox-cancel-btn");
+    const confirmBtn = document.getElementById("sandbox-confirm-btn");
+
+    // Bypass Button (Open Password Unlock Modal)
     bypassBtns.forEach(btn => {
         btn.addEventListener("click", () => {
-            Logger.log("Sandbox Bypass activated. Connecting credentials...", "warn");
+            if (passModal) {
+                passInput.value = "";
+                passError.classList.add("hidden");
+                
+                // Reset card styles
+                const card = document.querySelector(".sandbox-pass-card");
+                if (card) {
+                    card.style.border = "";
+                    card.style.boxShadow = "";
+                    card.style.animation = "";
+                }
+                
+                passModal.classList.remove("hidden");
+                passInput.focus();
+            }
+        });
+    });
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener("click", () => {
+            if (passModal) {
+                passModal.classList.add("hidden");
+            }
+        });
+    }
+
+    const unlockSandbox = () => {
+        const password = passInput.value.trim();
+        if (password === "ADMIN1") {
+            if (passModal) passModal.classList.add("hidden");
+            
+            Logger.log("Admin password verified. Sandbox Bypass activated. Connecting credentials...", "success");
             AppState.updateUser({
                 name: "Manohar Raju (Sandbox Mode)",
                 email: "manohar.raju@cloudoptima.internal",
@@ -129,8 +167,34 @@ function bindAuthEvents() {
             // Bypass linking screen too
             transitionView("auth-screen", "dashboard-screen");
             initializeDashboard();
+        } else {
+            if (passError) passError.classList.remove("hidden");
+            
+            // Shake effect for visual feedback
+            const card = document.querySelector(".sandbox-pass-card");
+            if (card) {
+                card.style.animation = "none";
+                setTimeout(() => {
+                    card.style.animation = "shake 0.3s ease";
+                    card.style.border = "1px solid var(--accent-crimson)";
+                    card.style.boxShadow = "0 0 20px rgba(239, 68, 68, 0.4)";
+                }, 10);
+            }
+            Logger.log("Sandbox Access Denied: Incorrect Admin Password.", "warn");
+        }
+    };
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener("click", unlockSandbox);
+    }
+    if (passInput) {
+        passInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                unlockSandbox();
+            }
         });
-    });
+    }
 }
 
 function setupTFAMasks() {

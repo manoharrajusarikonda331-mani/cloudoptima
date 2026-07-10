@@ -141,6 +141,25 @@
                 </div>
                 <button type="submit" class="btn btn-primary font-space">Create Credentials</button>
             </form>
+
+            <!-- Sandbox Password Unlock Modal -->
+            <div id="sandbox-password-modal" class="sandbox-password-modal hidden">
+                <div class="glass-container sandbox-pass-card" style="padding: 24px; max-width: 320px; width: 100%; display: flex; flex-direction: column; gap: 16px; position: relative; border-color: rgba(99, 102, 241, 0.2); background: rgba(7, 10, 19, 0.95);">
+                    <h3 class="font-space text-center" style="font-size: 16px; color: #ffffff; margin-bottom: 4px;">🔒 Admin Verification</h3>
+                    <p style="font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.4;">Please enter the administrator key to establish sandbox credentials.</p>
+                    
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <input type="password" id="sandbox-admin-pass-input" placeholder="Enter key..." style="padding-left: 16px !important; text-align: center; font-family: inherit; font-size: 13px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 8px; color: #fff; height: 40px; box-sizing: border-box; width: 100%;">
+                    </div>
+                    
+                    <div id="sandbox-pass-error" class="hidden text-red text-center font-space" style="font-size: 11px; font-weight: bold;">⚠️ Incorrect Key. Access Denied.</div>
+                    
+                    <div style="display: flex; gap: 10px;">
+                        <button id="sandbox-cancel-btn" type="button" class="btn btn-secondary btn-sm font-space" style="height: 36px; padding: 0 16px; flex-grow: 1;">Cancel</button>
+                        <button id="sandbox-confirm-btn" type="button" class="btn btn-primary btn-sm font-space" style="height: 36px; padding: 0 16px; flex-grow: 1;">Unlock</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

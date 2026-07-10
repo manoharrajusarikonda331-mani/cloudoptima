@@ -2125,5 +2125,40 @@ body {
     margin-top: 10px;
 }
 
+/* Sandbox Password Modal CSS */
+.sandbox-password-modal {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 100;
+    background: rgba(7, 10, 19, 0.85);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    transition: var(--transition-smooth);
+}
+
+.sandbox-password-modal.hidden {
+    display: none !important;
+}
+
+.sandbox-pass-card {
+    animation: zoom-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes zoom-in {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-8px); }
+    40%, 80% { transform: translateX(8px); }
+}
+
+
+
 
 
