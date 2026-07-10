@@ -86,11 +86,7 @@ class AgentOrchestrator {
                     Logger.log(`terraform apply -auto-approve -target=aws_instance.${target.id.replace(/-/g, '_')}`, "code");
                     Logger.log(`Successfully remediated ${updated.name}! Secured $${updated.cost.toFixed(2)}/mo in savings.`, "success");
                     
-                    // Trigger custom UI notification
-                    this.showNotification(
-                        `Resource Remediated!`,
-                        `Successfully optimized ${updated.name}. Secured $${updated.cost.toFixed(2)}/mo.`
-                    );
+                    // Add notification to state silently (increments header bell counter)
                     AppState.addNotification("Auto Remediated", `Successfully optimized ${updated.name}. Secured $${updated.cost.toFixed(2)}/mo.`, "success");
                 }
             }, 1500);
