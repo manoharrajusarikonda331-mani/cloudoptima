@@ -158,11 +158,65 @@ class StateManager {
                     comment: "Autonomous mode runs flawlessly. Swept our staging zone and resized instances instantly. Very robust dashboard.",
                     timestamp: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString()
                 }
-            ]
+            ],
+
+            // Notifications List
+            notifications: [
+                {
+                    id: "notif-1",
+                    title: "System Online",
+                    message: "CloudOptima connection tunnel established successfully.",
+                    type: "success",
+                    timestamp: new Date().toISOString(),
+                    read: false
+                }
+            ],
+            
+            // LLM Cop sensitivity threshold
+            routingThreshold: 5
         };
         
         // Listeners for telemetry or state changes
         this.listeners = [];
+    }
+
+    // Add new system notification
+    addNotification(title, message, type = "info") {
+        const notif = {
+            id: "notif-" + Math.random().toString(36).substring(2, 9),
+            title,
+            message,
+            type,
+            timestamp: new Date().toISOString(),
+            read: false
+        };
+        this.state.notifications.unshift(notif);
+        
+        // Keep only last 25 notifications to save memory
+        if (this.state.notifications.length > 25) {
+            this.state.notifications.pop();
+        }
+        
+        this.notify();
+        return notif;
+    }
+
+    // Mark all as read
+    markNotificationsAsRead() {
+        this.state.notifications.forEach(n => n.read = true);
+        this.notify();
+    }
+
+    // Clear notifications
+    clearNotifications() {
+        this.state.notifications = [];
+        this.notify();
+    }
+
+    // Update routing threshold
+    updateRoutingThreshold(val) {
+        this.state.routingThreshold = parseInt(val);
+        this.notify();
     }
 
     // Save feedbacks array to LocalStorage

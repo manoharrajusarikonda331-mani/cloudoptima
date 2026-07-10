@@ -4,8 +4,8 @@
    ========================================================================== */
 
 export const TrafficCop = {
-    // Analyze input prompt and return routing decision metrics
-    route(prompt) {
+    // Analyze input prompt and return routing decision metrics relative to a threshold
+    route(prompt, threshold = 5.0) {
         if (!prompt || prompt.trim() === '') {
             return {
                 complexityIndex: 0.0,
@@ -52,8 +52,8 @@ export const TrafficCop = {
         complexityIndex = Math.min(10.0, Math.round(complexityIndex * 10) / 10);
 
         // Step 2: Route decision threshold
-        // If complexity index is >= 5.0, route to Premium. Otherwise, route Local.
-        const isPremiumRoute = complexityIndex >= 5.0;
+        // If complexity index is >= threshold, route to Premium. Otherwise, route Local.
+        const isPremiumRoute = complexityIndex >= threshold;
         
         // Step 3: Compute Tokens (rough heuristic: 1 token = 4 characters)
         const inputTokens = Math.max(4, Math.round(charCount / 4));

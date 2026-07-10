@@ -662,6 +662,58 @@ function updateDashboardUI(state) {
 
     // Render support feedback feed
     renderFeedbackFeed(state);
+
+    // Update Notification Badge and Dropdown list
+    const badge = document.getElementById("notification-badge");
+    const notifList = document.getElementById("notification-list");
+    if (badge && notifList) {
+        const unreadCount = state.notifications.filter(n => !n.read).length;
+        badge.textContent = unreadCount;
+        if (unreadCount > 0) {
+            badge.style.display = "flex";
+        } else {
+            badge.style.display = "none";
+        }
+
+        notifList.innerHTML = "";
+        if (state.notifications.length === 0) {
+            notifList.innerHTML = `<div class="text-center font-space" style="font-size: 11px; color: var(--text-muted); padding: 20px;">No new alerts.</div>`;
+        } else {
+            state.notifications.forEach(n => {
+                const item = document.createElement("div");
+                item.className = `notification-item ${n.read ? '' : 'unread'}`;
+                
+                const notifTime = new Date(n.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                
+                item.innerHTML = `
+                    <div class="notification-title ${n.type}">
+                        <span>${n.title}</span>
+                        <span class="notification-time font-mono">${notifTime}</span>
+                    </div>
+                    <div class="notification-desc font-space">${n.message}</div>
+                `;
+                
+                // Click item to mark as read
+                item.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    n.read = true;
+                    badge.textContent = state.notifications.filter(x => !x.read).length;
+                    if (parseInt(badge.textContent) === 0) badge.style.display = "none";
+                    item.classList.remove("unread");
+                });
+                
+                notifList.appendChild(item);
+            });
+        }
+    }
+
+    // Update slider threshold value
+    const slider = document.getElementById("cop-threshold-slider");
+    const thresholdValLabel = document.getElementById("cop-threshold-val");
+    if (slider && thresholdValLabel) {
+        slider.value = state.routingThreshold;
+        thresholdValLabel.textContent = parseFloat(state.routingThreshold).toFixed(1);
+    }
 }
 
 function bindDashboardEvents() {
@@ -745,6 +797,7 @@ function bindDashboardEvents() {
                 const updated = AppState.remediateResource(res.id);
                 if (updated) {
                     Logger.log(`Remediation Complete. Removed waste cost of $${updated.cost.toFixed(2)}/mo.`, "success");
+                    AppState.addNotification("Resource Remediated", `Remediated resource ${updated.name}. Saved $${updated.monthlyWaste.toFixed(2)}/mo.`, "success");
                 }
             }, 1000);
         }
@@ -757,7 +810,10 @@ function bindDashboardEvents() {
             const res = AppState.state.resources.find(r => r.id === id);
             if (res) {
                 Logger.log(`Targeted click remediation triggered for ${res.name}`, "info");
-                AppState.remediateResource(id);
+                const updated = AppState.remediateResource(id);
+                if (updated) {
+                    AppState.addNotification("Resource Remediated", `Remediated resource ${updated.name}. Saved $${updated.monthlyWaste.toFixed(2)}/mo.`, "success");
+                }
             }
         }
     });
@@ -788,7 +844,7 @@ function bindDashboardEvents() {
         }, 300);
 
         // Run classification
-        const result = TrafficCop.route(prompt);
+        const result = TrafficCop.route(prompt, AppState.state.routingThreshold);
 
         setTimeout(() => {
             // Update routing display values
@@ -826,6 +882,9 @@ function bindDashboardEvents() {
             // Log output
             Logger.log(`[ROUTING-BENCH] Evaluated text query. Length: ${prompt.length} chars.`, "info");
             Logger.log(`[ROUTING-BENCH] Selected Route: ${result.routedTarget} (Est savings: $${result.savings.toFixed(5)})`, "success");
+            
+            // Add notification alert
+            AppState.addNotification("Traffic Routed", `Routed prompt to ${isPremium ? 'Claude API' : 'Local Llama-3'}. Complexity: ${result.complexityIndex}/10. Savings: $${result.savings.toFixed(4)}`, isPremium ? "info" : "success");
 
             // Reset animation styles
             setTimeout(() => {
@@ -839,6 +898,125 @@ function bindDashboardEvents() {
 
         }, 800);
     });
+
+    // 1. Notification Dropdown Toggle and Controls
+    const bellBtn = document.getElementById("notification-bell-btn");
+    const notifDropdown = document.getElementById("notification-dropdown");
+    const clearNotifsBtn = document.getElementById("clear-notifications-btn");
+
+    if (bellBtn && notifDropdown) {
+        bellBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            notifDropdown.classList.toggle("hidden");
+            // Mark all read when opening dropdown
+            if (!notifDropdown.classList.contains("hidden")) {
+                AppState.markNotificationsAsRead();
+            }
+        });
+
+        // Close on click outside
+        document.addEventListener("click", (e) => {
+            if (!bellBtn.contains(e.target) && !notifDropdown.contains(e.target)) {
+                notifDropdown.classList.add("hidden");
+            }
+        });
+    }
+
+    if (clearNotifsBtn) {
+        clearNotifsBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            AppState.clearNotifications();
+        });
+    }
+
+    // 2. Routing Complexity Slider Handler
+    const thresholdSlider = document.getElementById("cop-threshold-slider");
+    if (thresholdSlider) {
+        thresholdSlider.addEventListener("input", (e) => {
+            const val = parseFloat(e.target.value);
+            AppState.updateRoutingThreshold(val);
+        });
+    }
+
+    // 3. Report Exporter Handler
+    const exportBtn = document.getElementById("export-report-btn");
+    if (exportBtn) {
+        exportBtn.addEventListener("click", () => {
+            const state = AppState.state;
+            const user = state.user;
+            
+            let reportText = "";
+            reportText += "============================================================\n";
+            reportText += "               CLOUDO-OPTIMA FINOPS AUDIT REPORT            \n";
+            reportText += "============================================================\n\n";
+            reportText += `Generated Timestamp: ${new Date().toLocaleString()}\n`;
+            reportText += `Target Company:      ${user.linkedCompany}\n`;
+            reportText += `Operator User:       ${user.name} (${user.role})\n`;
+            reportText += `Cloud Provider:      ${user.cloudProvider} (Acc ID: ${user.accountId})\n`;
+            reportText += `IAM Security ARN:    ${user.roleArn}\n\n`;
+            
+            reportText += "------------------------------------------------------------\n";
+            reportText += "                     FINANCIAL METRICS                      \n";
+            reportText += "------------------------------------------------------------\n";
+            reportText += `Total Cloud Waste Identified:   $${state.telemetry.wastedCost.toFixed(2)}/mo\n`;
+            reportText += `Total Costs Secured (Savings): $${state.telemetry.savedCost.toFixed(2)}/mo\n`;
+            reportText += `Cloud Cost Efficiency Score:   ${state.telemetry.efficiencyScore}%\n`;
+            reportText += `Model Routing Sensitivity:     ${state.routingThreshold.toFixed(1)} / 10\n\n`;
+            
+            reportText += "------------------------------------------------------------\n";
+            reportText += "                    REMEDIATION ACTIONS AUDIT               \n";
+            reportText += "------------------------------------------------------------\n";
+            
+            const activeResources = state.resources.filter(r => !r.remediated);
+            const remediatedResources = state.resources.filter(r => r.remediated);
+            
+            reportText += `Remediated Resources (${remediatedResources.length}):\n`;
+            if (remediatedResources.length === 0) {
+                reportText += "  [None]\n";
+            } else {
+                remediatedResources.forEach(r => {
+                    reportText += `  [OK] ${r.name} (${r.type}) - Monthly Savings: $${r.monthlyWaste.toFixed(2)}/mo\n`;
+                });
+            }
+            
+            reportText += `\nUnresolved Waste Outliers (${activeResources.length}):\n`;
+            if (activeResources.length === 0) {
+                reportText += "  [All resources fully optimized!]\n";
+            } else {
+                activeResources.forEach(r => {
+                    reportText += `  [WARN] ${r.name} (${r.type}) - Monthly Waste: $${r.monthlyWaste.toFixed(2)}/mo\n`;
+                    reportText += `         Recommendation: ${r.recommendation}\n`;
+                });
+            }
+            
+            reportText += `\nRecommended Downscale CLI / IaC Policy Code Snippet:\n`;
+            if (activeResources.length > 0) {
+                reportText += `  ${WasteDetective.generateScript(activeResources[0], 'terraform').replace(/\n/g, '\n  ')}\n`;
+            } else {
+                reportText += "  All policies successfully deployed via Terraform automation loops.\n";
+            }
+            
+            reportText += "\n------------------------------------------------------------\n";
+            reportText += "                     LLM ROUTING HEURISTICS                 \n";
+            reportText += "------------------------------------------------------------\n";
+            reportText += `Claude Premium API Queries:   ${state.history.routingDistribution.premium}\n`;
+            reportText += `Local Llama-3 (Free) Queries: ${state.history.routingDistribution.local}\n\n`;
+            
+            reportText += "============================================================\n";
+            reportText += "   End of Report. CloudOptima - Autonomous FinOps Agent.    \n";
+            reportText += "============================================================\n";
+
+            // Trigger browser file download
+            const blob = new Blob([reportText], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `cloudoptima-finops-report-${user.linkedCompany.toLowerCase().replace(/\s+/g, '-')}.txt`;
+            link.click();
+            
+            Logger.log("Executive FinOps Audit Report exported and downloaded.", "success");
+            AppState.addNotification("Report Exported", `Audit report downloaded for ${user.linkedCompany}.`, "success");
+        });
+    }
 }
 
 /* ==========================================================================

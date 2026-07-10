@@ -34,8 +34,10 @@ class AgentOrchestrator {
 
         if (newStatus) {
             this.start();
+            AppState.addNotification("Agent Activated", "Autonomous FinOps Agent started background infrastructure scans.", "success");
         } else {
             this.stop();
+            AppState.addNotification("Agent Suspended", "Autonomous loops halted. Switched to manual controls.", "warn");
         }
         
         return newStatus;
@@ -89,6 +91,7 @@ class AgentOrchestrator {
                         `Resource Remediated!`,
                         `Successfully optimized ${updated.name}. Secured $${updated.cost.toFixed(2)}/mo.`
                     );
+                    AppState.addNotification("Auto Remediated", `Successfully optimized ${updated.name}. Secured $${updated.cost.toFixed(2)}/mo.`, "success");
                 }
             }, 1500);
         } else {
@@ -104,7 +107,7 @@ class AgentOrchestrator {
         
         Logger.log(`Incoming Query: "${prompt.substring(0, 50)}..."`, "info");
         
-        const result = TrafficCop.route(prompt);
+        const result = TrafficCop.route(prompt, AppState.state.routingThreshold);
         
         setTimeout(() => {
             // Register details in AppState history
@@ -116,6 +119,7 @@ class AgentOrchestrator {
             } else {
                 Logger.log(`[ROUTED] Complexity: ${result.complexityIndex}/10 -> Offloaded to ${result.routedTarget}. Saved: $${result.savings.toFixed(5)}`, "success");
             }
+            AppState.addNotification("Traffic Cop Route", `Simulated query routed to ${isPremium ? 'Claude API' : 'Local Llama-3'}. Complexity: ${result.complexityIndex}/10. Saved: $${result.savings.toFixed(4)}`, isPremium ? "info" : "success");
         }, 800);
     }
 
